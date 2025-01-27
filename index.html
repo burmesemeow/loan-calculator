@@ -8,12 +8,12 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            font-size: 18px;
             background-color: #f9f9f9;
             padding: 20px;
         }
         h1 {
             color: #333;
+            font-size: 24px;
         }
         form {
             background-color: #fff;
@@ -25,11 +25,11 @@
         }
         input, button {
             width: 100%;
-            padding: 12px;
-            margin: 12px 0;
+            padding: 10px;
+            margin: 10px 0;
             border: 1px solid #ccc;
             border-radius: 5px;
-            font-size: 18px;
+            font-size: 16px;
         }
         button {
             background-color: #28a745;
@@ -45,7 +45,7 @@
             padding: 20px;
             background-color: #f0f0f5;
             border-radius: 8px;
-            font-size: 18px;
+            font-size: 16px;
         }
     </style>
 </head>
@@ -62,7 +62,13 @@
         <input type="text" id="end_date" placeholder="Enter end date" required inputmode="numeric">
 
         <label for="monthly_rate">Monthly Interest Rate (%):</label>
-        <input type="number" step="0.01" id="monthly_rate" placeholder="Enter monthly rate" required inputmode="decimal">
+        <input 
+            type="text" 
+            id="monthly_rate" 
+            placeholder="Enter monthly rate" 
+            required 
+            inputmode="decimal" 
+            pattern="[0-9]*\.?[0-9]+">
 
         <button type="submit">Calculate</button>
     </form>
@@ -70,13 +76,11 @@
     <div id="results"></div>
 
     <script>
-        // Function to parse DD-MM-YYYY dates to a Date object
         function parseDate(dateString) {
             const [day, month, year] = dateString.split('-').map(Number);
             return new Date(year, month - 1, day);
         }
 
-        // Function to calculate the difference in years, months, and days between two dates
         function calculateDuration(startDate, endDate) {
             const start = parseDate(startDate);
             const end = parseDate(endDate);
@@ -85,13 +89,11 @@
             let months = end.getMonth() - start.getMonth();
             let days = end.getDate() - start.getDate();
 
-            // Adjust if days are negative
             if (days < 0) {
                 months -= 1;
                 days += new Date(end.getFullYear(), end.getMonth(), 0).getDate();
             }
 
-            // Adjust if months are negative
             if (months < 0) {
                 years -= 1;
                 months += 12;
@@ -101,14 +103,12 @@
             return { years, months, days, totalDays };
         }
 
-        // Function to format numbers with commas and fixed decimals
         function formatNumber(num, decimalPlaces = 2) {
             return parseFloat(num)
                 .toFixed(decimalPlaces)
                 .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         }
 
-        // Function to calculate the interest
         function calculateInterest() {
             const principal = document.getElementById("principal").value.replace(/,/g, '');
             const startDate = document.getElementById("start_date").value;
@@ -117,14 +117,13 @@
 
             const duration = calculateDuration(startDate, endDate);
             const totalMonths = duration.years * 12 + duration.months;
-            const dailyRate = (monthlyRate / 100) / 30; // Monthly rate divided by 30 days
+            const dailyRate = (monthlyRate / 100) / 30;
 
             const interestForMonths = (principal * (monthlyRate / 100) * totalMonths).toFixed(2);
             const interestForDays = (principal * dailyRate * duration.days).toFixed(2);
             const totalInterest = (parseFloat(interestForMonths) + parseFloat(interestForDays)).toFixed(2);
             const totalPayable = (parseFloat(principal) + parseFloat(totalInterest)).toFixed(2);
 
-            // Display the results
             document.getElementById("results").innerHTML = `
                 <h2>Results</h2>
                 <p><strong>Loan Amount:</strong> $${formatNumber(principal, 3)}</p>
@@ -137,24 +136,25 @@
             `;
         }
 
-        // Automatically format date input (DD-MM-YYYY)
         function formatDateInput(input) {
             input.addEventListener('input', (e) => {
-                let value = e.target.value.replace(/\D/g, ''); // Remove non-digits
+                let value = e.target.value.replace(/\D/g, '');
                 if (value.length > 2) value = value.slice(0, 2) + '-' + value.slice(2);
                 if (value.length > 5) value = value.slice(0, 5) + '-' + value.slice(5, 9);
-                e.target.value = value.slice(0, 10); // Limit to 10 characters
+                e.target.value = value.slice(0, 10);
             });
         }
 
-        // Apply date formatting to start and end date fields
         formatDateInput(document.getElementById('start_date'));
         formatDateInput(document.getElementById('end_date'));
 
-        // Automatically format amount input
         document.getElementById('principal').addEventListener('input', (e) => {
-            let value = e.target.value.replace(/[^0-9]/g, ''); // Allow only numbers
-            e.target.value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ','); // Format with commas
+            let value = e.target.value.replace(/[^0-9]/g, '');
+            if (value.length > 0) {
+                e.target.value = formatNumber(value, 0);
+            } else {
+                e.target.value = '';
+            }
         });
     </script>
 </body>
