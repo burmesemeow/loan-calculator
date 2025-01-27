@@ -8,13 +8,12 @@
     <style>
         body {
             font-family: Arial, sans-serif;
+            font-size: 18px;
             background-color: #f9f9f9;
             padding: 20px;
-            font-size: 18px; /* Increase base font size */
         }
         h1 {
             color: #333;
-            font-size: 28px; /* Increase heading size */
         }
         form {
             background-color: #fff;
@@ -26,18 +25,17 @@
         }
         input, button {
             width: 100%;
-            padding: 15px; /* Larger padding for inputs */
-            margin: 10px 0;
+            padding: 12px;
+            margin: 12px 0;
             border: 1px solid #ccc;
             border-radius: 5px;
-            font-size: 18px; /* Larger font for inputs */
+            font-size: 18px;
         }
         button {
             background-color: #28a745;
             color: white;
             border: none;
             cursor: pointer;
-            font-size: 18px; /* Larger font for button */
         }
         button:hover {
             background-color: #218838;
@@ -47,7 +45,7 @@
             padding: 20px;
             background-color: #f0f0f5;
             border-radius: 8px;
-            font-size: 18px; /* Larger font for results */
+            font-size: 18px;
         }
     </style>
 </head>
@@ -55,16 +53,16 @@
     <h1>Soe Calculator</h1>
     <form onsubmit="event.preventDefault(); calculateInterest();">
         <label for="principal">Loan Amount:</label>
-        <input type="tel" id="principal" placeholder="Enter loan amount" required inputmode="numeric">
+        <input type="text" id="principal" placeholder="Enter loan amount" required inputmode="numeric">
 
         <label for="start_date">Start Date (DD-MM-YYYY):</label>
-        <input type="tel" id="start_date" placeholder="Enter start date" required inputmode="numeric">
+        <input type="text" id="start_date" placeholder="Enter start date" required inputmode="numeric">
 
         <label for="end_date">End Date (DD-MM-YYYY):</label>
-        <input type="tel" id="end_date" placeholder="Enter end date" required inputmode="numeric">
+        <input type="text" id="end_date" placeholder="Enter end date" required inputmode="numeric">
 
         <label for="monthly_rate">Monthly Interest Rate (%):</label>
-        <input type="tel" id="monthly_rate" placeholder="Enter monthly rate" required inputmode="numeric">
+        <input type="number" step="0.01" id="monthly_rate" placeholder="Enter monthly rate" required inputmode="decimal">
 
         <button type="submit">Calculate</button>
     </form>
@@ -153,12 +151,10 @@
         formatDateInput(document.getElementById('start_date'));
         formatDateInput(document.getElementById('end_date'));
 
-        // Automatically format amount input with commas
+        // Automatically format amount input
         document.getElementById('principal').addEventListener('input', (e) => {
-            let value = e.target.value.replace(/,/g, ''); // Remove existing commas
-            if (!isNaN(value) && value !== "") {
-                e.target.value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ","); // Add commas
-            }
+            let value = e.target.value.replace(/[^0-9]/g, ''); // Allow only numbers
+            e.target.value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ','); // Format with commas
         });
     </script>
 </body>
